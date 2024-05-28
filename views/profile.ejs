@@ -1,0 +1,236 @@
+
+<%- include ('./components/header.ejs') %>
+
+<div class="profile w-full min-h-screen bg-zinc-800 text-white pt-1">
+<!--                                                            This part is must for multer-->
+    <form id="uploadForm" hidden action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="image">
+    </form>
+    <div class="profdets flex flex-col items-center mt-30">
+        <div class="relative">
+            <span id="uploadIcon" class=" hover:cursor-pointer w-8 h-8 absolute bottom-0 right-0 rounded-full flex items-center justify-center bg-zinc-200">
+                <i class="ri-pencil-fill text-zinc-800"></i>
+            </span>
+            <div class="w-32 h-32 bg-zinc-200 rounded-full overflow-hidden">
+                <img class="w-full h-full object-cover" src="/images/uploads/<%= userData.profileImage%>">
+            </div>
+        </div>
+        <h1 class="text-3xl font-semibold text-white mt-5"><%= userData.fullname%></h1>
+        <h3 class="text-md">@<%= userData.username%></h3>
+        <button class="mt-5 px-7 py-3 bg-zinc-700 rounded-full text-xs font-semibold"
+                type="button" id="showEditModal">Edit</button>
+        <button type="button" id="showPostModal" class="px-10 py-2 rounded-lg bg-red-700 text-xs  font-semibold mt-7">Add New Post</button>
+    </div>
+    <%if(userData.posts.length > 0){%>
+    <div class="cards flex flex-wrap gap-10 px-10 mt-10">
+        <div class="card">
+            <div class="w-52 h-40 bg-zinc-200 rounded-lg overflow-hidden">
+               <img class="w-full h-full object-cover" src="/images/uploads/<%= userData?.posts[0]?.postImage%>">
+            </div>
+            <a class="inline-block text-xl font-semibold mt-3" href="/show/posts"><h3 class="text-xl font-semibold mt-3">Your Uploaded Posts</h3></a>
+            <h5 class="text-xs font-medium opacity-60"><%= userData.posts.length %> Pins</h5>
+        </div>
+
+    </div>
+    <%}%>
+</div>
+
+<!--Edit Modal-->
+<div class="hidden min-h-screen m-0 border-black rounded-md w-full flex justify-center items-center bg-gray-600/50 absolute left-0 top-0" id="editModal">
+        <div class=" relative w-90 p-10 h-full bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-4xl font-semibold text-gray-900 dark:text-white ml-2.5">
+                   Edit Account Information
+                </h3>
+                <button type="button" id="closeEdit" class=" p-2 absolute top-1 right-1 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only" >Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5">
+                <form class="space-y-4" action="/edit" method="post">
+                    <div>
+                        <label for="fullName" class="block  mb-2 text-xl font-medium text-gray-900 dark:text-white">Your Full Name</label>
+                        <input type="text" name="fullName" id="fullName"
+                               value="<%= userData.fullname%>"
+                               class=" text-xl bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"  required />
+                    </div>
+                    <div>
+                        <label for="username" class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">Your Username</label>
+                        <input type="text" name="username" id="username"
+                               value="<%= userData.username%>"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                    </div>
+                    <div>
+                        <label for="email" class="block  mb-2 text-xl font-medium text-gray-900 dark:text-white">Your email</label>
+                        <input type="email" name="email" id="email"
+                               value="<%= userData.email%>"
+                               class=" text-xl bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"  required />
+                    </div>
+                    <div>
+                        <label for="contact" class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">Your Contact</label>
+                        <input type="number" name="contact" id="contact"
+                               value="<%= userData.contact%>"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                    </div>
+                    <br>
+                    <hr>
+                    <button type="submit" class="w-full text-white bg-blue-700 text-xl hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Update</button>
+                </form>
+            </div>
+        </div>
+</div>
+
+
+
+
+<!-- Upload Post Modal-->
+<div class="hidden min-h-screen m-0 border-black rounded-md w-full flex justify-center items-center bg-gray-600/50 absolute left-0 top-0" id="postModal">
+    <div class=" relative w-90 p-10 h-full bg-white rounded-lg shadow dark:bg-gray-700">
+        <!-- Modal header -->
+        <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+            <h3 class="text-4xl font-semibold text-gray-900 dark:text-white pl-5 pr-5 ml-2.5">
+                Upload New Post
+            </h3>
+            <button type="button" id="closePost" class=" p-2 absolute top-1 right-1 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+                <span class="sr-only" >Close modal</span>
+            </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-4 md:p-5">
+            <form class="space-y-4" action="/createPost" method="post" enctype="multipart/form-data">
+                <input type="file" name="postImage" id="newPost" hidden>
+                <div>
+                    <button type="button" id="choosePost" class="w-auto text-white bg-red-700 text-xl hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Choose Image</button>
+                </div>
+                <div>
+                    <label for="postTitle"  class="block  mb-2 text-xl font-medium text-gray-900 dark:text-white">Post Title</label>
+                    <input type="text" name="postTitle" id="postTitle" class=" text-xl bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"/>
+                </div>
+                <div>
+                    <label for="postDescription" class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">Post Description</label>
+                    <textarea  rows="3" type="text" name="postDescription" id="postDescription"  class="bg-gray-50 border border-gray-300 text-gray-900 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                    </textarea>
+                </div>
+                <div class="flex justify-between">
+                    <div class="flex flex-col items-start">
+                        <div id="newOption" class="flex items-center  h-5">
+                            <input id="newBoard" type="radio" name="radioOptions" value="new" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
+                            <label for="newBoard" class="ms-2 text-lg font-medium text-gray-900 dark:text-gray-300">New Board ?</label>
+                        </div>
+                        <div id="existingOption" class="flex items-center h-5">
+                            <input id="existingBoard" type="radio" name="radioOptions" value="exist" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-600 dark:border-gray-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
+                            <label for="existingBoard" class="ms-2 text-lg font-medium text-gray-900 dark:text-gray-300">Existing Board ?</label>
+                        </div>
+                    </div>
+                </div>
+                <div  class="hidden" id="boardOptions">
+                    <label for="cars" class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">App Kiski Gand Marna Chahege:</label>
+                    <select name="cars" id="cars"  class=" text-xl bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                        <option value="volvo">Abhi ki Mami</option>
+                        <option value="saab">Livan ki Mami</option>
+                        <option value="opel">Hemangi</option>
+                        <option value="audi">Hamre Sabse Pyari Jatin ki mami</option>
+                    </select>
+                </div>
+                <div class="hidden" id="newBoardCon">
+                    <label for="boardName" class= "block mb-2 text-xl font-medium text-gray-900 dark:text-white">New Board Name</label>
+                    <input type="text" name="boardName" id="boardName"  class="bg-gray-50 border border-gray-300 text-gray-900 text-xl rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"/>
+                </div>
+                <br>
+                <hr>
+                <button type="submit" class="w-full text-white bg-blue-700 text-xl hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg  px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Upload</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+<!--By using the Jquery we are redirecting the user click event to File Input-->
+
+    $('#uploadIcon').on("click", function() {
+        $("#uploadForm input").click();
+    })
+
+    // When the File Choose Window opens, and we select any file, so we are triggering  the event called change.
+    // and when this event occur then this event handler submit the form.
+    $('#uploadForm input').on("change",function()
+    {
+        $("#uploadForm").submit();
+    })
+
+    $("#showEditModal").on("click",function()
+    {
+        $("#editModal").removeClass("hidden")
+    })
+    $("#closeEdit").on("click",function()
+    {
+        $("#editModal").addClass("hidden")
+    })
+
+    $("#showPostModal").on("click",function()
+    {
+        $("#postModal").removeClass("hidden")
+    })
+
+    $("#closePost").on("click",function()
+    {
+        $("#postModal").addClass("hidden")
+    })
+
+    $("#choosePost").on("click",function()
+    {
+        $("#newPost").click()
+    })
+
+
+
+$("#newBoard").on("change", function()
+{
+    // Checking whether the Checked Property of CheckBox is true or not.
+    if ($(this).prop("checked"))
+    {
+        $("#newBoardCon").removeClass("hidden");
+        $("#boardOptions").addClass("hidden")
+        console.log($(this).prop("value"))
+    }
+    else
+    {
+        $("#boardOptions").removeClass("hidden")
+        $("#newBoardCon").addClass("hidden");
+    }
+});
+
+$("#existingBoard").on("change", function()
+{
+    // Checking whether the Checked Property of CheckBox is true or not.
+    if ($(this).prop("checked"))
+    {
+        console.log($(this).prop("value"))
+        $("#boardOptions").removeClass("hidden")
+        $("#newBoardCon").addClass("hidden");
+
+    }
+    else
+    {
+        $("#boardOptions").addClass("hidden")
+        $("#newBoardCon").removeClass("hidden");
+
+
+    }
+});
+
+
+
+
+
+</script>
+
+
+<%- include ('./components/footer.ejs') %>
